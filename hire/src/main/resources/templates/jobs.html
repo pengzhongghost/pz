@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+    <script type="text/javascript">
+        function topage(data) {
+            var index = $(data).children(1).val();
+            location.href="/JobController/showJobs?index1="+index;
+        }
+        function insert() {
+            location.href="/JobController/insert";
+        }
+        function thisPage(data) {
+            var index = $(data).prev().val();
+            location.href="/JobController/excelCreate?index1="+index;
+        }
+        function allPage() {
+            location.href="/JobController/excelCreate";
+        }
+    </script>
+</head>
+<body style="background-image:url(/images/light-veneer.png);">
+<div class="ui button teal" onclick="insert()">查询</div>
+<input hidden="hidden" id="thisindex" th:value="${pageBean.index}">
+<div class="ui button teal" onclick="thisPage(this)">打印此页</div>
+<div class="ui button teal" onclick="allPage()">打印全部</div>
+<table style="border: 1px aqua">
+    <tr>
+        <th>职位名</th>
+        <th>公司名</th>
+        <th>薪资</th>
+        <th>工作地点</th>
+    </tr>
+    <tr th:each="job:${pageBean.list}">
+        <th th:text="${job.jobName}"></th>
+        <th th:text="${job.companyName}"></th>
+        <th th:text="${job.money}"></th>
+        <th th:text="${job.location}"></th>
+    </tr>
+
+
+</table>
+<div class="content right aligned ui container " >
+    <div class="ui buttons" >
+        <input hidden="hidden" id="rightindex" th:value="${pageBean.index}">
+        <button class="ui teal icon button" th:if="${pageBean.index>1}" onclick="topage(this)" th:value="${pageBean.index-1}">
+            <input hidden="hidden"  th:value="${pageBean.index-1}">
+            <i class="hand point left outline icon" ></i>
+        </button>
+
+        <div class="container" th:each="num:${pageBean.numbers}">
+            <button class="ui teal icon button"  th:if="${pageBean.index!=num}"   onclick="topage(this)">
+                <input hidden="hidden" th:value="${num}">
+                <i  th:text="${num}" ></i>
+            </button>
+            <button class="ui teal icon button" th:if="${pageBean.index==num}"    onclick="javascript:0">
+                <input hidden="hidden" th:value="${num}">
+                <i  th:text="${num}" ></i>
+            </button>
+        </div>
+
+        <button class="ui teal icon button" th:if="${pageBean.index<pageBean.totalPageCount}"  onclick="topage(this)" th:value="${pageBean.index+1}">
+            <input hidden="hidden"  th:value="${pageBean.index+1}">
+            <i  class="hand point right outline icon" ></i>
+        </button>
+
+    </div>
+</div>
+
+
+</body>
+</html>

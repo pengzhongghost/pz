@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.reptile.mapper.JobMapper">
+    <insert id="insert" parameterType="Job">
+
+        insert into job values(#{id},#{jobName},#{companyName},#{money},#{location});
+    </insert>
+    <select id="select" resultType="Job">
+        select * from job
+        limit #{param1},#{param2}
+    </select>
+    <select id="selectCount" resultType="int">
+        select count(*) from job;
+    </select>
+    <select id="selectAll" resultType="Job">
+        select * from job;
+    </select>
+</mapper>
+
