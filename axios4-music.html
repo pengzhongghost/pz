@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+		<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+	</head>
+	<body style="background-image: url(img/watercolor.png);">
+						 
+		<div id="app">
+			<div class="ui stackable">
+				<div class="ui horizontal segments">
+					<div class="ui segment" style="width:25%">
+						<input type="text" v-model="query" @keyup.enter="searchMusic"/>
+						<button @click="searchMusic" >搜索</button><br />
+						<audio controls  :src="musicUrl" autoplay style="width:100%" ></audio>
+						<div class="image " >
+							<img :src="pictureUrl" style="width:100%">
+						</div>
+						<div class="ui comments" >
+						  <div class="comment" v-for="item in hotComments" style="margin-top: 10px;">
+						    <a class="avatar">
+						      <img :src="item.user.avatarUrl"/>
+						    </a>
+						    <div class="content">
+						      <a class="author" v-text="item.user.nickname"></a>
+						      <div class="text" v-text="item.content"></div>						      
+						    </div>
+						  </div>
+						</div>
+					</div>
+					<div class="ui  segment" style="width:50%;">
+						<video :src="mvUrl" autoplay controls="controls" style="width: 100%;"></video>
+					
+					</div>
+					<div class="ui segment" style="width: 10%!important;">
+						<div class="card stackable" >
+							<div class="ui card" v-for="item in musicList">
+								
+								<div class="content">
+								    <a class="header" v-text="item.name" @click="playMusic(item.id)">Kristy</a>
+									<div class="meta">
+									      <span class="date" v-if="item.mvid!=0" @click="playMv(item.mvid,item.id)">
+									      	<b>MV</b><i class="video icon"></i>
+									      </span>
+									</div>
+									<div class="description">Kristy is an art director living in New York. </div>
+								</div>
+								<div class="extra content">
+								    <a href="javascript:0" >播放</a>
+								</div>
+							</div>
+						</div>	
+					</div>	
+				</div>
+			</div>
+		</div>
+		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+		<script>
+			var app=new Vue({
+				el:"#app",
+				data:{
+					query:"逍遥",
+					musicList:[],
+					musicUrl:"",
+					pictureUrl:"",
+					hotComments:[],
+					isPlaying:false,
+					mvUrl:""
+				},
+				methods:{
+					
+					searchMusic:function(){
+						var that=this;
+						axios.get("https://autumnfish.cn/search?keywords="+this.query)
+						.then(function(response){
+							console.log(response.data.result.songs);
+							that.musicList=response.data.result.songs;
+							
+						})
+					},
+					playMusic:function(musicId){
+						//console.log(musicId);
+						var that=this;
+						axios.get("https://autumnfish.cn/song/url?id="+musicId)
+						.then(function(response){
+							//console.log(response.data.data[0].url);
+							that.musicUrl=response.data.data[0].url;
+							//console.log(that.musicUrl);
+						}),
+						axios.get("https://autumnfish.cn/song/detail?ids="+musicId).then(function(response){
+							//console.log(response.data.songs[0].al.picUrl);
+							that.pictureUrl=response.data.songs[0].al.picUrl;
+											
+						}),
+						axios.get("https://autumnfish.cn/comment/hot?type=0&id="+musicId)
+						.then(function(response){
+							console.log(response.data.hotComments);
+							that.hotComments=response.data.hotComments;
+							
+						})
+					},
+					playMv:function(mvid,musicId){
+						var that=this;
+						axios.get("https://autumnfish.cn/mv/url?id="+mvid)
+						.then(function(response){
+							console.log(response.data.data.url);
+							that.mvUrl=response.data.data.url;
+						},function(err){}),
+						axios.get("https://autumnfish.cn/song/detail?ids="+musicId).then(function(response){
+							//console.log(response.data.songs[0].al.picUrl);
+							that.pictureUrl=response.data.songs[0].al.picUrl;
+											
+						}),
+						axios.get("https://autumnfish.cn/comment/hot?type=0&id="+musicId)
+						.then(function(response){
+							console.log(response.data.hotComments);
+							that.hotComments=response.data.hotComments;
+							
+						})
+					}
+				}
+			})
+			
+		</script>
+	</body>
+</html>
